@@ -1,0 +1,93 @@
+{
+  "name": "finaltask",
+  "version": "1.0.0",
+  "dependencies": {
+    "@cap-js-community/odata-v2-adapter": "^1.15.12",
+    "@cap-js/hana": "^2.8.0",
+    "@sap/cds": "^9.9.1",
+    "@sap/xssec": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2.4",
+    "@sap/cds-dk": "^9.9.1",
+    "cds-plugin-ui5": "^0.13.0",
+    "mbt": "^1.2.29",
+    "rimraf": "^5.0.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-leave-request": "cds watch --open leaverequest/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "undeploy": "cf undeploy finaltask --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-manager-dashboard": "cds watch --open managerdashboard/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-manager-kpi": "cds watch --open managerkpi/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-employee": "cds watch --open employee/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-department": "cds watch --open department/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-travel-request": "cds watch --open travelrequest/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-manager-dashboard-travel": "cds watch --open managerdashboardtravel/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "private": true,
+  "cds": {
+    "requires": {
+      "[production]": {
+        "auth": "xsuaa"
+      },
+      "[development]": {
+        "auth": {
+          "kind": "dummy",
+          "users": {
+            "Employee": {
+              "password": "pass",
+              "roles": [
+                "Employee"
+              ]
+            },
+            "shrivathsa.patil@company.com": {
+              "id": "shrivathsa.patil@company.com",
+              "password": "123",
+              "roles": [
+                "Manager"
+              ]
+            },
+            "Manager": {
+              "password": "pass",
+              "roles": [
+                "Employee"
+              ]
+            },
+            "Administrator": {
+              "password": "pass",
+              "roles": [
+                "Administrator"
+              ]
+            }
+          }
+        }
+      },
+      "destinations": true,
+      "html5-repo": true,
+      "workzone": true
+    },
+    "server": {
+      "index": true
+    },
+    "cov2ap": {
+      "services": {
+        "TravelManagementService": false,
+        "LeaveManagementService": false
+      }
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/leave-request",
+    "app/manager-dashboard",
+    "app/manager-kpi",
+    "app/employee",
+    "app/department",
+    "app/travel-request"
+  ]
+}

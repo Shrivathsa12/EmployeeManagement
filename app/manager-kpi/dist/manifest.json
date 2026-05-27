@@ -1,0 +1,209 @@
+{
+	"_version": "1.84.0",
+	"sap.app": {
+		"id": "managerkpi",
+		"type": "application",
+		"i18n": {
+			"bundleUrl": "i18n/i18n.properties",
+			"supportedLocales": [
+				""
+			]
+		},
+		"applicationVersion": {
+			"version": "0.0.1"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"resources": "resources.json",
+		"sourceTemplate": {
+			"id": "@sap/generator-fiori:alp",
+			"version": "1.23.0",
+			"toolsId": "da62d16c-e83f-41f8-bcc5-127b4785f256"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/odata/v4/leave-management/",
+				"type": "OData",
+				"settings": {
+					"annotations": [],
+					"odataVersion": "4.01"
+				}
+			}
+		},
+		"crossNavigation": {
+			"inbounds": {
+				"managerkpi-display": {
+					"semanticObject": "managerkpi",
+					"action": "display",
+					"signature": {
+						"parameters": {},
+						"additionalParameters": "allowed"
+					}
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": true,
+		"dependencies": {
+			"minUI5Version": "1.148.0",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.fe.templates": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "managerkpi.i18n.i18n",
+					"supportedLocales": [
+						""
+					]
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"operationMode": "Server",
+					"autoExpandSelect": true,
+					"earlyRequests": true
+				}
+			},
+			"@i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"uri": "i18n/i18n.properties",
+				"settings": {
+					"supportedLocales": [
+						""
+					]
+				}
+			}
+		},
+		"resources": {
+			"css": []
+		},
+		"routing": {
+			"config": {},
+			"routes": [
+				{
+					"pattern": ":?query:",
+					"name": "LeaveAnalyticsList",
+					"target": "LeaveAnalyticsList"
+				},
+				{
+					"pattern": "LeaveAnalytics({key}):?query:",
+					"name": "LeaveAnalyticsObjectPage",
+					"target": "LeaveAnalyticsObjectPage"
+				}
+			],
+			"targets": {
+				"LeaveAnalyticsList": {
+					"type": "Component",
+					"id": "LeaveAnalyticsList",
+					"name": "sap.fe.templates.ListReport",
+					"options": {
+						"settings": {
+							"contextPath": "/LeaveAnalytics",
+							"variantManagement": "Page",
+							"initialLoad": true,
+							"navigation": {
+								"LeaveAnalytics": {
+									"detail": {
+										"route": "LeaveAnalyticsObjectPage"
+									}
+								}
+							},
+							"controlConfiguration": {
+								"@com.sap.vocabularies.UI.v1.LineItem": {
+									"tableSettings": {
+										"type": "AnalyticalTable",
+										"selectionMode": "Auto"
+									}
+								}
+							},
+							"views": {
+								"paths": [
+									{
+										"primary": [
+											{
+												"annotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant"
+											}
+										],
+										"secondary": [
+											{
+												"annotationPath": "com.sap.vocabularies.UI.v1.LineItem"
+											}
+										],
+										"defaultPath": "both"
+									}
+								]
+							},
+							"keyPerformanceIndicators": {
+								"KPI1": {
+									"entitySet": "LeaveAnalytics",
+									"annotationPath": "com.sap.vocabularies.UI.v1.KPI#PendingRequests"
+								},
+								"KPI2": {
+									"entitySet": "LeaveAnalytics",
+									"annotationPath": "com.sap.vocabularies.UI.v1.KPI#ApprovedRequests"
+								},
+								"KPI3": {
+									"entitySet": "LeaveAnalytics",
+									"annotationPath": "com.sap.vocabularies.UI.v1.KPI#RejectedRequests"
+								}
+							}
+						}
+					}
+				},
+				"LeaveAnalyticsObjectPage": {
+					"type": "Component",
+					"id": "LeaveAnalyticsObjectPage",
+					"name": "sap.fe.templates.ObjectPage",
+					"options": {
+						"settings": {
+							"editableHeaderContent": false,
+							"contextPath": "/LeaveAnalytics"
+						}
+					}
+				}
+			}
+		},
+		"flexBundle": false
+	},
+	"sap.fiori": {
+		"registrationIds": [],
+		"archeType": "analytical"
+	},
+	"sap.fe": {
+		"app": {
+			"enableLazyLoading": true
+		}
+	},
+	"sap.cloud": {
+		"public": true,
+		"service": "finaltask.service"
+	}
+}

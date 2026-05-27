@@ -1,0 +1,247 @@
+
+### Get all employees
+GET http://localhost:4004/odata/v4/leave-management/Employees
+Authorization: Basic Employee pass
+
+
+### Get all departments
+GET http://localhost:4004/odata/v4/leave-management/Departments
+Authorization: Basic Employee pass
+
+
+### Get all leave requests
+GET http://localhost:4004/odata/v4/leave-management/LeaveRequests
+Authorization: Basic Employee pass
+
+###
+
+### Employee should NOT access manager leave requests
+GET http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests
+Authorization: Basic Employee pass
+
+###
+
+### Get leave type values
+GET http://localhost:4004/odata/v4/leave-management/LeaveTypeView
+Authorization: Basic Employee pass
+
+### Get status type values
+GET http://localhost:4004/odata/v4/leave-management/StatusTypeView
+Authorization: Basic Employee pass
+
+
+### Employee should NOT access leave analytics
+GET http://localhost:4004/odata/v4/leave-management/LeaveAnalytics
+Authorization: Basic Employee pass
+
+###
+
+### Create new draft leave request
+POST http://localhost:4004/odata/v4/leave-management/LeaveRequests
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{
+  "Employee_ID": "c7d2e4f5-1a93-45c8-bf27-2e6a4b7d2002",
+  "LeaveType": "Annual",
+  "StartDate": "2026-10-01",
+  "EndDate": "2026-10-05",
+  "NumberOfDays": 5,
+  "Reason": "Family Vacation"
+}
+
+
+### Submit pending leave request
+POST http://localhost:4004/odata/v4/leave-management/LeaveRequests(ID='c3d4e5f6-a1b2-4c33-ad44-333333333333',IsActiveEntity=true)/LeaveManagementService.submitLeaveRequest
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{}
+
+### Cancel pending leave request
+POST http://localhost:4004/odata/v4/leave-management/LeaveRequests(ID='c3d4e5f6-a1b2-4c33-ad44-333333333333',IsActiveEntity=true)/LeaveManagementService.cancelLeave
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{}
+
+
+### Get leave balance using bound function
+GET http://localhost:4004/odata/v4/leave-management/Employees(ID='c7d2e4f5-1a93-45c8-bf27-2e6a4b7d2002',IsActiveEntity=true)/LeaveManagementService.getLeaveBalance()
+Authorization: Basic Employee pass
+
+
+
+### Get manager leave requests
+GET http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests
+Authorization: Basic Manager pass
+
+### Get only pending leave requests
+GET http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests?$filter=Status eq 'Pending'
+Authorization: Basic Manager pass
+
+### Approve pending leave request
+POST http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests(ID='c3d4e5f6-a1b2-4c33-ad44-333333333333',IsActiveEntity=true)/LeaveManagementService.approveLeave
+Content-Type: application/json
+Authorization: Basic Manager pass
+
+{
+  "ApprovedBy_ID": "f3a9c1d2-7b84-4f11-92d1-1a5f9c3e1001"
+}
+
+
+### Reject pending leave request
+POST http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests(ID='f6a1b2c3-d4e5-4f66-b077-666666666666',IsActiveEntity=true)/LeaveManagementService.rejectLeave
+Content-Type: application/json
+Authorization: Basic Manager pass
+
+{
+  "Reason": "Project deadline",
+  "ApprovedBy_ID": "f3a9c1d2-7b84-4f11-92d1-1a5f9c3e1001"
+}
+
+###
+
+### Employee should NOT approve leave request
+POST http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests(ID='c3d4e5f6-a1b2-4c33-ad44-333333333333',IsActiveEntity=true)/LeaveManagementService.approveLeave
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{
+  "ApprovedBy_ID": "f3a9c1d2-7b84-4f11-92d1-1a5f9c3e1001"
+}
+
+###
+
+### Manager should NOT access leave analytics
+GET http://localhost:4004/odata/v4/leave-management/LeaveAnalytics
+Authorization: Basic Manager pass
+
+
+
+### Administrator can access leave analytics
+GET http://localhost:4004/odata/v4/leave-management/LeaveAnalytics
+Authorization: Basic Administrator pass
+
+###
+
+### Administrator can delete leave request
+DELETE http://localhost:4004/odata/v4/leave-management/LeaveRequests(ID='a7b2c3d4-e5f6-4a77-b188-777777777777',IsActiveEntity=true)
+Authorization: Basic Administrator pass
+
+
+### Employee should NOT delete leave request
+DELETE http://localhost:4004/odata/v4/leave-management/LeaveRequests(ID='a7b2c3d4-e5f6-4a77-b188-777777777777',IsActiveEntity=true)
+Authorization: Basic Employee pass
+
+
+### Administrator can access manager leave requests
+GET http://localhost:4004/odata/v4/leave-management/Manager_LeaveRequests
+Authorization: Basic Administrator pass
+
+
+### Get all travel requests
+GET http://localhost:4004/odata/v2/travel-management/TravelRequests
+Authorization: Basic Employee pass
+
+
+### Get all travel documents
+GET http://localhost:4004/odata/v2/travel-management/TravelDocuments
+Authorization: Basic Employee pass
+
+
+### Create travel request
+POST http://localhost:4004/odata/v2/travel-management/TravelRequests
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{
+  "Employee_ID": "c7d2e4f5-1a93-45c8-bf27-2e6a4b7d2002",
+  "Destination": "Mysore",
+  "Purpose": "Client Visit",
+  "DepartureDate": "2026-08-01",
+  "ReturnDate": "2026-08-05",
+  "EstimatedBudget": 25000
+}
+
+
+### Create high budget travel request
+POST http://localhost:4004/odata/v2/travel-management/TravelRequests
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{
+  "Employee_ID": "c7d2e4f5-1a93-45c8-bf27-2e6a4b7d2002",
+  "Destination": "Singapore",
+  "Purpose": "Conference",
+  "DepartureDate": "2026-09-01",
+  "ReturnDate": "2026-09-10",
+  "EstimatedBudget": 999999
+}
+
+
+### Employee should NOT approve travel request
+POST http://localhost:4004/odata/v2/travel-management/TravelRequests(ID=guid'd4f5a6b1-c2d3-4d44-e555-444444444444',IsActiveEntity=true)/TravelManagementService.approveTravel
+Content-Type: application/json
+Authorization: Basic Employee pass
+
+{
+  "ApprovedBy_ID": "f3a9c1d2-7b84-4f11-92d1-1a5f9c3e1001"
+}
+
+
+
+### Get travel requests as manager
+GET http://localhost:4004/odata/v2/travel-management/TravelRequests
+Authorization: Basic Manager pass
+
+
+### Get only pending travel requests
+GET http://localhost:4004/odata/v2/travel-management/TravelRequests?$filter=Status eq 'Pending'
+Authorization: Basic Manager pass
+
+
+### Approve pending travel request
+POST http://localhost:4004/odata/v2/travel-management/TravelRequests(ID=guid'd4f5a6b1-c2d3-4d44-e555-444444444444',IsActiveEntity=true)/TravelManagementService.approveTravel
+Content-Type: application/json
+Authorization: Basic Manager pass
+
+{
+  "ApprovedBy_ID": "f3a9c1d2-7b84-4f11-92d1-1a5f9c3e1001"
+}
+
+
+### Reject pending travel request
+POST http://localhost:4004/odata/v2/travel-management/TravelRequests(ID=guid'a7c2d3e4-f5a6-4a77-b888-777777777777',IsActiveEntity=true)/TravelManagementService.rejectTravel
+Content-Type: application/json
+Authorization: Basic Manager pass
+
+{
+  "ApprovedBy_ID": "f3a9c1d2-7b84-4f11-92d1-1a5f9c3e1001",
+  "Reason": "Budget not approved"
+}
+
+
+### Administrator can delete travel request
+DELETE http://localhost:4004/odata/v2/travel-management/TravelRequests(ID=guid'a4c1d2e3-f4a5-4add-beee-dddddddddddd',IsActiveEntity=true)
+Authorization: Basic Administrator pass
+
+
+### Employee should NOT delete travel request
+DELETE http://localhost:4004/odata/v2/travel-management/TravelRequests(ID=guid'a4c1d2e3-f4a5-4add-beee-dddddddddddd',IsActiveEntity=true)
+Authorization: Basic Employee pass
+
+
+### Administrator can access all travel requests
+GET http://localhost:4004/odata/v2/travel-management/TravelRequests
+Authorization: Basic Administrator pass
+
+###
+
+### Check leave service metadata
+GET http://localhost:4004/odata/v4/leave-management/$metadata
+
+###
+
+### Check travel service metadata
+GET http://localhost:4004/odata/v2/travel-management/$metadata
