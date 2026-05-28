@@ -21,21 +21,8 @@ service LeaveManagementService {
             to   : ['Administrator']
         }
     ]
-    entity Employees             as projection on FT.Employees
-        actions {
-            @requires: [
-                'Employee',
-                'Administrator'
-            ]
-            @restrict: [{
-                grant: '*',
-                to   : [
-                    'Employee',
-                    'Administrator'
-                ]
-            }, ]
-            function getLeaveBalance() returns String;
-        };
+    entity Employees             as projection on FT.Employees;
+
 
     @requires: [
         'Employee',
@@ -90,7 +77,7 @@ service LeaveManagementService {
                     'Administrator'
                 ]
             }, ]
-            action submitLeaveRequest() returns String;
+            action   submitLeaveRequest() returns String;
 
             @requires: [
                 'Employee',
@@ -103,8 +90,23 @@ service LeaveManagementService {
                     'Administrator'
                 ]
             }, ]
-            action cancelLeave()        returns String;
+            action   cancelLeave()        returns String;
+
+
+            @requires: [
+                'Employee',
+                'Administrator'
+            ]
+            @restrict: [{
+                grant: '*',
+                to   : [
+                    'Employee',
+                    'Administrator'
+                ]
+            }, ]
+            function getLeaveBalance()    returns String;
         };
+
 
     @requires: [
         'Manager',
@@ -112,7 +114,7 @@ service LeaveManagementService {
     ]
     @restrict: [
         {
-            grant: 'READ',
+            grant: ['READ'],
             to   : ['Manager', ]
         },
         {
@@ -163,7 +165,7 @@ service LeaveManagementService {
 
     @requires                  : ['Administrator']
     @restrict                  : [{
-        grant: 'READ',
+        grant: '*',
         to   : ['Administrator']
     }]
     entity LeaveAnalytics        as projection on FT.LeaveAnalytics;
@@ -279,6 +281,20 @@ service TravelManagementService {
         };
 
 
+           @requires: [
+        'Manager',
+        'Administrator'
+    ]
+    @restrict: [
+        {
+            grant: ['READ'],
+            to   : ['Manager', ]
+        },
+        {
+            grant: '*',
+            to   : ['Administrator']
+        }
+    ] 
     entity Manager_TravelRequests  as projection on FT.Manager_TravelRequests
         actions {
             @Core.OperationAvailable: {$edmJson: {$Eq: [

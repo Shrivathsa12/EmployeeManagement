@@ -36,7 +36,7 @@
       },
       "[development]": {
         "auth": {
-          "kind": "dummy",
+          "kind": "mocked",
           "users": {
             "Employee": {
               "password": "pass",

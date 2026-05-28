@@ -296,19 +296,24 @@ module.exports = cds.service.impl(async function () {
         };
     });
 
-    //FUNCTION FOR GETTING LEAVE BALANCE
-    this.on("getLeaveBalance", async (req) => {
-        const ID = req.params[0]?.ID;
-        const employee = await SELECT.one.from(Employees).where({ ID })
-        console.log(employee);
+    //FUNCTION FOR GETTING LEAVE BALANCE OF EMPLOYEE
+this.on("getLeaveBalance", async (req) => {
+    const ID = req.params[0]?.ID;
 
-        if (!employee) return req.error("Employee not found");
+    const leaveRequest = await SELECT.one.from(LeaveRequests).columns('Employee_ID').where({ ID });
 
-        req.info(`Leave balance : ${employee.LeaveBalance}`)
-        console.log(String(employee.LeaveBalance))
-        return String(employee.LeaveBalance)
+    console.log("Leave Request:", leaveRequest);
+    if (!leaveRequest) return req.error(404, "Leave request not found");
 
-    })
+    const employee = await SELECT.one.from(Employees).columns('LeaveBalance', 'Name').where({ ID: leaveRequest.Employee_ID });
+
+    if (!employee) return req.error(404, "Employee not found");
+
+    const balance = employee.LeaveBalance;
+
+    req.info(`Leave balance for ${employee.Name}: ${balance}`);
+    console.log("Leave Balance:", balance);
+});
 
 
     // ACTION FOR CANCELL LEAVE REQ

@@ -70,6 +70,11 @@ annotate service.LeaveRequests with @(
             $Type : 'UI.DataFieldForAction',
             Action: 'LeaveManagementService.cancelLeave',
             Label : 'Cancel Leave'
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action: 'LeaveManagementService.EntityContainer/getLeaveBalance',
+            Label : 'Get Leave Balance'
         }
     ],
 
@@ -187,7 +192,12 @@ annotate service.LeaveRequests with @(
             Action     : 'LeaveManagementService.cancelLeave',
             Label      : 'Cancel Leave',
             Criticality: 1
-
+        },
+        {
+            $Type      : 'UI.DataFieldForAction',
+            Action     : 'LeaveManagementService.getLeaveBalance',
+            Label      : 'Get Leave Balance',
+            Criticality: 2
         }
     ]
 
