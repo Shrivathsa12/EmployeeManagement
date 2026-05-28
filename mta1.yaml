@@ -1,0 +1,281 @@
+_schema-version: 3.3.0
+ID: finaltask
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: finaltask-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: finaltask-auth
+  - name: finaltask-db
+  - name: finaltask-destination
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    instances: 1
+  build-parameters:
+    builder: npm-ci
+- name: finaltask-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: finaltask-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: finaltask
+  type: approuter.nodejs
+  path: app/router
+  requires:
+  - name: srv-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: srv-api
+      url: ~{srv-url}
+  - name: finaltask-auth
+  - name: finaltask-html5-runtime
+  - name: finaltask-destination
+    group: destinations
+    properties:
+      forwardAuthToken: false
+      name: ui5
+      url: https://ui5.sap.com
+  provides:
+  - name: app-api
+    properties:
+      app-protocol: ${protocol}
+      app-uri: ${default-uri}
+  parameters:
+    disk-quota: 256M
+    keep-existing-routes: true
+    memory: 256M
+- name: finaltask-app-deployer
+  type: com.sap.application.content
+  path: gen
+  requires:
+  - name: finaltask-auth
+  - name: srv-api
+  - name: finaltask-html5-repo-host
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+      content-target: true
+  parameters:
+    config:
+      destinations:
+      - Authentication: NoAuthentication
+        HTML5.DynamicDestination: true
+        HTML5.ForwardAuthToken: true
+        Name: srv-api
+        ProxyType: Internet
+        Type: HTTP
+        URL: ~{srv-api/srv-url}
+  build-parameters:
+    build-result: app/
+    requires:
+    - artifacts:
+      - department.zip
+      name: finaltaskdepartment
+      target-path: app/
+    - artifacts:
+      - employee.zip
+      name: finaltaskemployee
+      target-path: app/
+    - artifacts:
+      - leave-request.zip
+      name: finaltaskleaverequest
+      target-path: app/
+    - artifacts:
+      - manager-dashboard.zip
+      name: finaltaskmanagerdashboard
+      target-path: app/
+    - artifacts:
+      - manager-kpi.zip
+      name: finaltaskmanagerkpi
+      target-path: app/
+    - artifacts:
+      - travel-request.zip
+      name: finaltasktravelrequest
+      target-path: app/
+    - artifacts:
+      - managertravel.zip
+      name: managertravel
+      target-path: app/
+- name: finaltaskdepartment
+  type: html5
+  path: app/department
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm ci
+    - npm run build
+    supported-platforms: []
+- name: finaltaskemployee
+  type: html5
+  path: app/employee
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm ci
+    - npm run build
+    supported-platforms: []
+- name: finaltaskleaverequest
+  type: html5
+  path: app/leave-request
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: finaltaskmanagerdashboard
+  type: html5
+  path: app/manager-dashboard
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: finaltaskmanagerkpi
+  type: html5
+  path: app/manager-kpi
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: finaltasktravelrequest
+  type: html5
+  path: app/travel-request
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: finaltask-destinations
+  type: com.sap.application.content
+  requires:
+  - name: finaltask-auth
+    parameters:
+      service-key:
+        name: finaltask-auth-key
+  - name: finaltask-html5-repo-host
+    parameters:
+      service-key:
+        name: finaltask-html5-repo-host-key
+  - name: srv-api
+  - name: finaltask-destination
+    parameters:
+      content-target: true
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: finaltask-html5-repository
+          ServiceInstanceName: finaltask-html5-repo-host
+          ServiceKeyName: finaltask-html5-repo-host-key
+          sap.cloud.service: finaltask.service
+        - Authentication: OAuth2UserTokenExchange
+          Name: finaltask-auth
+          ServiceInstanceName: finaltask-auth
+          ServiceKeyName: finaltask-auth-key
+          sap.cloud.service: finaltask.service
+        existing_destinations_policy: update
+  build-parameters:
+    no-source: true
+- name: managertravel
+  type: html5
+  path: app/manager-travel
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: finaltask-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      oauth2-configuration:
+        credential-types:
+        - binding-secret
+        - x509
+        redirect-uris:
+        - https://*~{app-api/app-uri}/**
+      role-collections:
+      - description: generated
+        name: Employee (finaltask ${org}-${space})
+        role-template-references:
+        - $XSAPPNAME.Employee
+      - description: generated
+        name: Manager (finaltask ${org}-${space})
+        role-template-references:
+        - $XSAPPNAME.Manager
+      - description: generated
+        name: Administrator (finaltask ${org}-${space})
+        role-template-references:
+        - $XSAPPNAME.Administrator
+      tenant-mode: dedicated
+      xsappname: finaltask-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+  requires:
+  - name: app-api
+- name: finaltask-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: finaltask-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+    service: destination
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: finaltask-html5-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+- name: finaltask-html5-runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

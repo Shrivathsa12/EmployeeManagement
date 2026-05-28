@@ -25,7 +25,8 @@
     "watch-employee": "cds watch --open employee/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-department": "cds watch --open department/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-travel-request": "cds watch --open travelrequest/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-manager-dashboard-travel": "cds watch --open managerdashboardtravel/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-manager-dashboard-travel": "cds watch --open managerdashboardtravel/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-manager-travel": "cds watch --open managertravel/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "cds": {
@@ -47,7 +48,7 @@
               "id": "shrivathsa.patil@company.com",
               "password": "123",
               "roles": [
-                "Manager"
+                "Employee"
               ]
             },
             "Manager": {
@@ -88,6 +89,7 @@
     "app/manager-kpi",
     "app/employee",
     "app/department",
-    "app/travel-request"
+    "app/travel-request",
+    "app/manager-travel"
   ]
 }

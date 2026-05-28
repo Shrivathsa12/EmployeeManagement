@@ -117,7 +117,7 @@ module.exports = cds.service.impl(async function () {
     // CHECKING TRAVEL BUDGET LIMIT THAT IS WITHIN LIMIT
     this.before("CREATE", TravelRequests, async (req) => {
 
-        const userEmail = req.user.id; 
+        const userEmail = req.user.id;
 
         console.log("Logged in user:", userEmail);
 
@@ -204,9 +204,9 @@ module.exports = cds.service.impl(async function () {
         }
 
         const updateLeaveRequest = await UPDATE(LeaveRequests).set({
-                Status: 'Approved',
-                ApprovedBy_ID: employee.Manager_ID
-            })
+            Status: 'Approved',
+            ApprovedBy_ID: employee.Manager_ID
+        })
             .where({ ID });
 
         const newBalance = availableBalance - requestedDays;
@@ -389,6 +389,60 @@ module.exports = cds.service.impl(async function () {
         };
     });
 
+    this.on("completeTravel", async (req) => {
+
+        const ID = req.params[0]?.ID;
+
+        console.log("Complete triggered for:", ID);
+
+        const travelRequest = await SELECT.one
+            .from(TravelRequests)
+            .where({ ID });
+
+        if (!travelRequest)
+            return req.error(404, "Travel request not found");
+
+        if (travelRequest.Status !== "Approved")
+            return req.error(400, "Travel request must be approved before it can be completed");
+
+        if (travelRequest.Status === "Completed")
+            return req.error(400, "Travel request is already completed");
+
+        const employee = await SELECT.one
+            .from(Employees)
+            .where({ ID: travelRequest.Employee_ID });
+
+        if (!employee)
+            return req.error(404, "Employee not found");
+
+        await UPDATE(TravelRequests)
+            .set({ Status: "Completed" })
+            .where({ ID });
+
+        const updatedTravel = await SELECT.one
+            .from(TravelRequests)
+            .where({ ID });
+
+        const audit = cds.log("audit");
+
+        audit.info("COMPLETE_TRAVEL", {
+            action: "COMPLETE_TRAVEL",
+            travelRequest: ID,
+            completedBy: travelRequest.Approver_ID,
+            employee: employee.Name,
+            destination: travelRequest.Destination,
+            estimatedBudget: travelRequest.EstimatedBudget,
+            timestamp: new Date()
+        });
+
+        req.info("Travel completed successfully");
+
+        return {
+            message: "Travel completed successfully",
+            ID,
+            Status: updatedTravel.Status
+        };
+    });
 
     // ACTION FOR REJECT TRAVEL REQ
     this.on("rejectTravel", async (req) => {
@@ -473,6 +527,8 @@ module.exports = cds.service.impl(async function () {
             RejectedRequests: rejected.count || 0
         }];
     });
+
+
 
 
     this.on('updateActualBudget', TravelRequests, async (req) => {

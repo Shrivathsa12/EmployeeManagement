@@ -66,18 +66,13 @@ annotate service.TravelRequests with @(
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action: 'TravelManagementService.approveTravel',
-            Label : 'Approve Travel'
-        },
-        {
-            $Type : 'UI.DataFieldForAction',
-            Action: 'TravelManagementService.rejectTravel',
-            Label : 'Reject Travel'
+            Action: 'TravelManagementService.completeTravel',
+            Label : 'Complete Travel'
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action: 'TravelManagementService.updateActualBudget',
-            Label : 'update ActualBudget'
+            Label : 'Update Actual Budget'
         }
     ],
 
@@ -198,20 +193,15 @@ annotate service.TravelRequests with @(
     UI.Identification         : [
         {
             $Type : 'UI.DataFieldForAction',
-            Action: 'TravelManagementService.approveTravel',
-            Label : 'Approve Travel',
-            Criticality : 3
-        },
-        {
-            $Type : 'UI.DataFieldForAction',
-            Action: 'TravelManagementService.rejectTravel',
-            Label : 'Reject Travel',
-            Criticality : 1
+            Action: 'TravelManagementService.completeTravel',
+            Label : 'Complete Travel',
+            Criticality : 5
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action: 'TravelManagementService.updateActualBudget',
-            Label : 'Update Budget'
+            Label : 'Update Actual Budget',
+            Criticality : 2
         }
     ]
 

@@ -64,14 +64,6 @@ modules:
     build-parameters:
       build-result: app/
       requires:
-        - name: finaltaskdepartment
-          artifacts:
-            - department.zip
-          target-path: app/
-        - name: finaltaskemployee
-          artifacts:
-            - employee.zip
-          target-path: app/
         - name: finaltaskleaverequest
           artifacts:
             - leave-request.zip
@@ -83,6 +75,10 @@ modules:
         - name: finaltaskmanagerkpi
           artifacts:
             - manager-kpi.zip
+          target-path: app/
+        - name: finaltaskmanagertravel
+          artifacts:
+            - manager-travel.zip
           target-path: app/
         - name: finaltasktravelrequest
           artifacts:
@@ -107,28 +103,6 @@ modules:
             HTML5.ForwardAuthToken: true
             HTML5.DynamicDestination: true
 
-  - name: finaltaskdepartment
-    type: html5
-    path: app/department
-    build-parameters:
-      build-result: dist
-      builder: custom
-      commands:
-        - npm ci
-        - npm run build
-      supported-platforms:
-        []
-  - name: finaltaskemployee
-    type: html5
-    path: app/employee
-    build-parameters:
-      build-result: dist
-      builder: custom
-      commands:
-        - npm ci
-        - npm run build
-      supported-platforms:
-        []
   - name: finaltaskleaverequest
     type: html5
     path: app/leave-request
@@ -154,6 +128,17 @@ modules:
   - name: finaltaskmanagerkpi
     type: html5
     path: app/manager-kpi
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm ci
+        - npm run build
+      supported-platforms:
+        []
+  - name: finaltaskmanagertravel
+    type: html5
+    path: app/manager-travel
     build-parameters:
       build-result: dist
       builder: custom

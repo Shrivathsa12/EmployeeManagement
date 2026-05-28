@@ -27,6 +27,13 @@ service LeaveManagementService {
                 'Employee',
                 'Administrator'
             ]
+            @restrict: [{
+                grant: '*',
+                to   : [
+                    'Employee',
+                    'Administrator'
+                ]
+            }, ]
             function getLeaveBalance() returns String;
         };
 
@@ -61,15 +68,6 @@ service LeaveManagementService {
             ],
             to   : ['Employee']
         },
-
-        {
-            grant: [
-                'READ',
-                'UPDATE'
-            ],
-            to   : ['Manager']
-        },
-
         {
             grant: '*',
             to   : ['Administrator']
@@ -86,7 +84,7 @@ service LeaveManagementService {
                 'Administrator'
             ]
             @restrict: [{
-                grant: 'submitLeaveRequest',
+                grant: '*',
                 to   : [
                     'Employee',
                     'Administrator'
@@ -99,7 +97,7 @@ service LeaveManagementService {
                 'Administrator'
             ]
             @restrict: [{
-                grant: 'cancelLeave',
+                grant: '*',
                 to   : [
                     'Employee',
                     'Administrator'
@@ -129,7 +127,7 @@ service LeaveManagementService {
                 'Administrator'
             ]
             @restrict: [{
-                grant: 'approveLeave',
+                grant: '*',
                 to   : [
                     'Manager',
                     'Administrator'
@@ -142,7 +140,7 @@ service LeaveManagementService {
                 'Administrator'
             ]
             @restrict: [{
-                grant: 'rejectLeave',
+                grant: '*',
                 to   : [
                     'Manager',
                     'Administrator'
@@ -228,7 +226,10 @@ service TravelManagementService {
         },
 
         {
-            grant: ['READ'],
+            grant: [
+                'READ',
+                'DELETE'
+            ],
             to   : ['Manager']
         },
 
@@ -239,7 +240,46 @@ service TravelManagementService {
 
     ]
     @cds.redirection.target
-    entity TravelRequests  as projection on FT.TravelRequests
+    entity TravelRequests          as projection on FT.TravelRequests
+        actions {
+            @Core.OperationAvailable: {$edmJson: {$Eq: [
+                {$Path: 'Status'},
+                'Approved'
+            ]}}
+            @requires               : [
+                'Employee',
+                'Administrator'
+            ]
+            @restrict               : [{
+                grant: '*',
+                to   : [
+                    'Employee',
+                    'Administrator'
+                ]
+            }, ]
+            action completeTravel()                                 returns String;
+
+
+            @Core.OperationAvailable: {$edmJson: {$Eq: [
+                {$Path: 'Status'},
+                'Completed'
+            ]}}
+            @requires               : [
+                'Employee',
+                'Administrator'
+            ]
+            @restrict               : [{
+                grant: '*',
+                to   : [
+                    'Employee',
+                    'Administrator'
+                ]
+            }, ]
+            action updateActualBudget(ActualBudget: Decimal(10, 2)) returns Decimal(10, 2);
+        };
+
+
+    entity Manager_TravelRequests  as projection on FT.Manager_TravelRequests
         actions {
             @Core.OperationAvailable: {$edmJson: {$Eq: [
                 {$Path: 'Status'},
@@ -250,13 +290,13 @@ service TravelManagementService {
                 'Administrator'
             ]
             @restrict               : [{
-                grant: 'approveTravel',
+                grant: '*',
                 to   : [
                     'Manager',
                     'Administrator'
                 ]
             }, ]
-            action approveTravel()                                  returns String;
+            action approveTravel()              returns String;
 
             @Core.OperationAvailable: {$edmJson: {$Eq: [
                 {$Path: 'Status'},
@@ -267,27 +307,14 @@ service TravelManagementService {
                 'Administrator'
             ]
             @restrict               : [{
-                grant: 'rejectTravel',
+                grant: '*',
                 to   : [
                     'Manager',
                     'Administrator'
                 ]
             }, ]
-            action rejectTravel(Reason: String)                     returns String;
-            @Core.OperationAvailable: {$edmJson: {$Eq: [
-                {$Path: 'Status'},
-                'Completed'
-            ]}}
-            @restrict               : [{
-                grant: 'updateActualBudget',
-                to   : [
-                    'Employee',
-                    'Administrator'
-                ]
-            }, ]
-            action updateActualBudget(ActualBudget: Decimal(10, 2)) returns Decimal(10, 2);
+            action rejectTravel(Reason: String) returns String;
         };
-
 
     @requires: [
         'Employee',
@@ -314,7 +341,7 @@ service TravelManagementService {
             to   : ['Administrator']
         },
     ]
-    entity TravelDocuments as projection on FT.TravelDocuments;
+    entity TravelDocuments         as projection on FT.TravelDocuments;
 
     @requires: [
         'Employee',
@@ -329,9 +356,9 @@ service TravelManagementService {
             'Administrator'
         ]
     }]
-    entity Employees       as projection on FT.Employees
-                              order by
-                                  EmpNo asc;
+    entity Employees               as projection on FT.Employees
+                                      order by
+                                          EmpNo asc;
 
     @requires: [
         'Employee',
@@ -347,7 +374,7 @@ service TravelManagementService {
         ]
     }]
 
-    entity StatusTypeViewforTravel  as projection on FT.StatusTypeViewforTravel;
+    entity StatusTypeViewforTravel as projection on FT.StatusTypeViewforTravel;
 
 
 }

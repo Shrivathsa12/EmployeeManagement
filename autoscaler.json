@@ -10,7 +10,7 @@
         "start_time": "08:00",
         "end_time": "18:00",
         "instance_min_count": 3,
-        "instance_max_count": 4,
+        "instance_max_count": 3,
         "initial_min_instance_count": 3
       },
       {
