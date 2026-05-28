@@ -134,7 +134,7 @@ annotate service.Manager_TravelRequests with @(
             {
                 $Type: 'UI.DataField',
                 Label: 'Approval Date',
-                Value: ApprovalDate
+                Value:  ApprovalDate
             },
             {
                 $Type       : 'UI.DataField',
@@ -180,7 +180,12 @@ annotate service.Manager_TravelRequests with @(
         $Type : 'UI.ReferenceFacet',
         Label : 'Travel Details',
         Target: '@UI.FieldGroup#TravelInfo'
-    }],
+    },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'Destination',
+            Target : '@UI.DataPoint#Destination',
+        },],
 
     UI.Facets                 : [
         {
@@ -216,7 +221,13 @@ annotate service.Manager_TravelRequests with @(
             Label      : 'Reject Travel',
             Criticality: 1
         }
-    ]
+    ],
+    UI.DataPoint #Destination : {
+        $Type : 'UI.DataPointType',
+        Value : Destination,
+        Title : 'Destination',
+        Criticality : 1
+    },
 
 );
 

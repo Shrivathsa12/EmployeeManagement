@@ -1,6 +1,8 @@
 const cds = require('@sap/cds');
 
 module.exports = cds.service.impl(async function () {
+
+
     const { Employees, LeaveRequests } = this.entities('LeaveManagementService');
     //console.log(LeaveRequests);
 
@@ -205,9 +207,12 @@ module.exports = cds.service.impl(async function () {
 
         const updateLeaveRequest = await UPDATE(LeaveRequests).set({
             Status: 'Approved',
+            ApprovalDate: new Date(),
             ApprovedBy_ID: employee.Manager_ID
         })
             .where({ ID });
+
+           // const leaveRequestupdate = await SELECT.one.from(LeaveRequests).where({ ID })
 
         const newBalance = availableBalance - requestedDays;
 
@@ -228,6 +233,7 @@ module.exports = cds.service.impl(async function () {
             remainingBalance: newBalance,
             timestamp: new Date()
         });
+
 
         req.info("Leave approved successfully");
         return {
@@ -365,6 +371,7 @@ this.on("getLeaveBalance", async (req) => {
         await UPDATE(TravelRequests)
             .set({
                 Status: "Approved",
+                ApprovalDate: new Date(),
                 Approver_ID: employee.Manager_ID
             })
             .where({ ID });

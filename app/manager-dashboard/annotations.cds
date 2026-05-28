@@ -132,6 +132,11 @@ annotate service.Manager_LeaveRequests with @(
                 $Type: 'UI.DataField',
                 Label: 'Approved By',
                 Value: ApprovedBy.Name
+            },
+            {
+                $Type: 'UI.DataField',
+                Label: 'Approval Date',
+                Value: ApprovalDate
             }
         ]
     },
@@ -166,7 +171,12 @@ annotate service.Manager_LeaveRequests with @(
         $Type : 'UI.ReferenceFacet',
         Label : 'Leave Details',
         Target: '@UI.FieldGroup#LeaveInfo'
-    }],
+    },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'LeaveType',
+            Target : '@UI.DataPoint#LeaveType',
+        },],
 
     UI.Facets                 : [
         {
@@ -203,7 +213,13 @@ annotate service.Manager_LeaveRequests with @(
             Label : 'Reject Leave',
             Criticality: 1
         }
-    ]
+    ],
+    UI.DataPoint #LeaveType : {
+        $Type : 'UI.DataPointType',
+        Value : LeaveType,
+        Title : 'LeaveType',
+        Criticality: 1
+    },
 
 );
 

@@ -114,6 +114,11 @@ annotate service.LeaveRequests with @(
                 Value: NumberOfDays
             },
             {
+                $Type: 'UI.DataField',
+                Label: 'Number Of Days',
+                Value: NumberOfDays
+            },
+            {
                 $Type       : 'UI.DataField',
                 Label       : 'Status',
                 Value       : Status,
@@ -156,7 +161,12 @@ annotate service.LeaveRequests with @(
         $Type : 'UI.ReferenceFacet',
         Label : 'Leave Details',
         Target: '@UI.FieldGroup#LeaveInfo'
-    }],
+    },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'LeaveType',
+            Target : '@UI.DataPoint#LeaveType',
+        },],
 
     UI.Facets                 : [
         {
@@ -199,7 +209,13 @@ annotate service.LeaveRequests with @(
             Label      : 'Get Leave Balance',
             Criticality: 2
         }
-    ]
+    ],
+    UI.DataPoint #LeaveType : {
+        $Type : 'UI.DataPointType',
+        Value : LeaveType,
+        Title : 'LeaveType',
+        Criticality: 1
+    },
 
 );
 

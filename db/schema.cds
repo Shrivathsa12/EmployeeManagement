@@ -65,7 +65,7 @@ entity TravelRequests : cuid, managed {
     ];
     Status          : StatusType default 'Pending' @readonly;
     Approver        : Association to Employees default null @readonly;
-    ApprovalDate    : Date;
+    ApprovalDate    : Date ;
     Documents       : Composition of many TravelDocuments
                           on Documents.TravelRequest = $self;
 }
