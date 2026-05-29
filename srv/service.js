@@ -1,6 +1,66 @@
 const cds = require('@sap/cds');
+const axios = require('axios');
+
 
 module.exports = cds.service.impl(async function () {
+
+    const getPublicHolidays = async (country = 'IN', year = new Date().getFullYear()) => {
+        try {
+            const calendarific = await cds.connect.to('LeaveAPI');
+            const API_KEY = process.env.CALENDARIFIC_API_KEY || '';
+
+
+            const response = await calendarific.get(
+                `/holidays?api_key=${API_KEY}&country=IN&year=${year}`
+            );
+            //console.log("Calendarific API Response:", response.data);
+            const holidays = response?.response?.holidays || [];
+            //console.log("Calendarific API Response, " ,JSON.stringify(holidays));
+
+
+            console.log(`Fetched ${holidays.length} holidays for ${country} - ${year}`);
+
+            console.log(holidays[0])
+
+            return holidays.map(h => ({
+                name: h.name,
+                date: h.date.iso,
+                day: h.date.datetime.day,
+                month: h.date.datetime.month,
+                year: h.date.datetime.year,
+                weekday: h.date.datetime ? new Date(h.date.iso).toLocaleDateString('en-IN', { weekday: 'long' }) : '',
+                primary_type: h.primary_type,
+                description: h.description || ''
+            }));
+
+        } catch (err) {
+            console.error("Calendarific API Error:", err.message);
+            return [];
+        }
+    };
+    this.on("getHolidays", async (req) => {
+        const { country, year } = req.data;
+
+        if (!year) return req.error(400, "Year is required");
+        if (year < 2000) return req.error(400, "Year must be greater than 2000");
+        if (isNaN(year)) return req.error(400, "Invalid year entered");
+
+        console.log(`Fetching holidays for country: ${country || 'IN'}, year: ${year}`);
+
+        const holidays = await getPublicHolidays(country || 'IN', year);
+
+        if (!holidays.length)
+            return req.error(404, `No holidays found for ${country || 'IN'} in ${year}`);
+
+        let holidayList = `Public Holidays in ${country || 'IN'} for ${year}:\n\n`;
+
+        for (let i = 0; i < holidays.length; i++) {
+            holidayList += `${i + 1}. ${holidays[i].name} - ${holidays[i].date} - ${holidays[i].weekday}\n`;
+        }
+        req.info(holidayList);
+
+        return holidays;
+    });
 
 
     const { Employees, LeaveRequests } = this.entities('LeaveManagementService');
@@ -52,9 +112,7 @@ module.exports = cds.service.impl(async function () {
 
         if (numberOfDays > employee.LeaveBalance) {
             return req.error(
-                403,
-                `Insufficient leave balance. Available: ${employee.LeaveBalance}`
-            );
+                403, `Insufficient leave balance. Available: ${employee.LeaveBalance}`);
         }
 
         const overlap = await SELECT.one
@@ -212,7 +270,7 @@ module.exports = cds.service.impl(async function () {
         })
             .where({ ID });
 
-           // const leaveRequestupdate = await SELECT.one.from(LeaveRequests).where({ ID })
+        // const leaveRequestupdate = await SELECT.one.from(LeaveRequests).where({ ID })
 
         const newBalance = availableBalance - requestedDays;
 
@@ -303,23 +361,23 @@ module.exports = cds.service.impl(async function () {
     });
 
     //FUNCTION FOR GETTING LEAVE BALANCE OF EMPLOYEE
-this.on("getLeaveBalance", async (req) => {
-    const ID = req.params[0]?.ID;
+    this.on("getLeaveBalance", async (req) => {
+        const ID = req.params[0]?.ID;
 
-    const leaveRequest = await SELECT.one.from(LeaveRequests).columns('Employee_ID').where({ ID });
+        const leaveRequest = await SELECT.one.from(LeaveRequests).columns('Employee_ID').where({ ID });
 
-    console.log("Leave Request:", leaveRequest);
-    if (!leaveRequest) return req.error(404, "Leave request not found");
+        console.log("Leave Request:", leaveRequest);
+        if (!leaveRequest) return req.error(404, "Leave request not found");
 
-    const employee = await SELECT.one.from(Employees).columns('LeaveBalance', 'Name').where({ ID: leaveRequest.Employee_ID });
+        const employee = await SELECT.one.from(Employees).columns('LeaveBalance', 'Name').where({ ID: leaveRequest.Employee_ID });
 
-    if (!employee) return req.error(404, "Employee not found");
+        if (!employee) return req.error(404, "Employee not found");
 
-    const balance = employee.LeaveBalance;
+        const balance = employee.LeaveBalance;
 
-    req.info(`Leave balance for ${employee.Name}: ${balance}`);
-    console.log("Leave Balance:", balance);
-});
+        req.info(`Leave balance for ${employee.Name}: ${balance}`);
+        console.log("Leave Balance:", balance);
+    });
 
 
     // ACTION FOR CANCELL LEAVE REQ

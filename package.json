@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.15.12",
-    "@cap-js/hana": "^2.8.0",
+    "@cap-js/hana": "^2",
+    "@sap-cloud-sdk/connectivity": "^4.7.0",
+    "@sap-cloud-sdk/http-client": "^4.7.0",
     "@sap/cds": "^9.9.1",
     "@sap/xssec": "^4"
   },
@@ -31,6 +33,19 @@
   "private": true,
   "cds": {
     "requires": {
+      "LeaveAPI": {
+        "kind": "rest",
+        "[development]": {
+          "credentials": {
+            "url": "https://calendarific.com/api/v2"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "LeaveAPI"
+          }
+        }
+      },
       "[production]": {
         "auth": "xsuaa"
       },
@@ -87,8 +102,6 @@
     "app/leave-request",
     "app/manager-dashboard",
     "app/manager-kpi",
-    "app/employee",
-    "app/department",
     "app/travel-request",
     "app/manager-travel"
   ]

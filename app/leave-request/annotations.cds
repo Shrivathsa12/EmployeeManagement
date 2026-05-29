@@ -73,9 +73,13 @@ annotate service.LeaveRequests with @(
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action: 'LeaveManagementService.EntityContainer/getLeaveBalance',
+            Action: 'LeaveManagementService.getLeaveBalance',
             Label : 'Get Leave Balance'
-        }
+        },
+        {
+            $Type      : 'UI.DataFieldForAction',
+            Action     : 'LeaveManagementService.EntityContainer/getHolidays',
+            Label      : 'Get Holidays',        },
     ],
 
     UI.FieldGroup #GeneralInfo: {
@@ -157,16 +161,18 @@ annotate service.LeaveRequests with @(
         ]
     },
 
-    UI.HeaderFacets           : [{
-        $Type : 'UI.ReferenceFacet',
-        Label : 'Leave Details',
-        Target: '@UI.FieldGroup#LeaveInfo'
-    },
+    UI.HeaderFacets           : [
         {
             $Type : 'UI.ReferenceFacet',
-            ID : 'LeaveType',
-            Target : '@UI.DataPoint#LeaveType',
-        },],
+            Label : 'Leave Details',
+            Target: '@UI.FieldGroup#LeaveInfo'
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID    : 'LeaveType',
+            Target: '@UI.DataPoint#LeaveType',
+        },
+    ],
 
     UI.Facets                 : [
         {
@@ -208,12 +214,12 @@ annotate service.LeaveRequests with @(
             Action     : 'LeaveManagementService.getLeaveBalance',
             Label      : 'Get Leave Balance',
             Criticality: 2
-        }
+        },
     ],
-    UI.DataPoint #LeaveType : {
-        $Type : 'UI.DataPointType',
-        Value : LeaveType,
-        Title : 'LeaveType',
+    UI.DataPoint #LeaveType   : {
+        $Type      : 'UI.DataPointType',
+        Value      : LeaveType,
+        Title      : 'LeaveType',
         Criticality: 1
     },
 

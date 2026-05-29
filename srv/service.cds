@@ -77,7 +77,7 @@ service LeaveManagementService {
                     'Administrator'
                 ]
             }, ]
-            action   submitLeaveRequest() returns String;
+            action   submitLeaveRequest()       returns String;
 
             @requires: [
                 'Employee',
@@ -90,7 +90,7 @@ service LeaveManagementService {
                     'Administrator'
                 ]
             }, ]
-            action   cancelLeave()        returns String;
+            action   cancelLeave()              returns String;
 
 
             @requires: [
@@ -104,10 +104,21 @@ service LeaveManagementService {
                     'Administrator'
                 ]
             }, ]
-            function getLeaveBalance()    returns String;
+            function getLeaveBalance()          returns String;
+
+     
         };
 
-
+       action   getHolidays(year: Integer) returns array of {
+                name         : String;
+                date         : String;
+                day          : Integer;
+                month        : Integer;
+                year         : Integer;
+                weekday      : String;
+                primary_type : String;
+                description  : String;
+            };
     @requires: [
         'Manager',
         'Administrator'
@@ -149,6 +160,7 @@ service LeaveManagementService {
                 ]
             }, ]
             action rejectLeave(Reason: String) returns String;
+
         };
 
     @Aggregation.ApplySupported: {
@@ -199,6 +211,7 @@ service LeaveManagementService {
         ]
     }]
     entity StatusTypeView        as projection on FT.StatusTypeView;
+
 
 };
 
@@ -281,7 +294,7 @@ service TravelManagementService {
         };
 
 
-           @requires: [
+    @requires: [
         'Manager',
         'Administrator'
     ]
@@ -294,7 +307,7 @@ service TravelManagementService {
             grant: '*',
             to   : ['Administrator']
         }
-    ] 
+    ]
     entity Manager_TravelRequests  as projection on FT.Manager_TravelRequests
         actions {
             @Core.OperationAvailable: {$edmJson: {$Eq: [

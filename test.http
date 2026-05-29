@@ -2,6 +2,15 @@
 ### Get all employees
 GET http://localhost:4004/odata/v4/leave-management/Employees
 Authorization: Basic Employee pass
+###
+POST http://localhost:4004/odata/v4/leave-management/getHolidays
+Content-Type: application/json
+
+{
+   "country": "IN",
+    "year": 2026
+}
+
 
 
 ### Get all departments
